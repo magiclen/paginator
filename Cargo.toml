@@ -1,0 +1,23 @@
+[package]
+name = "paginator"
+version = "0.1.0"
+authors = ["Magic Len <len@magiclen.org>"]
+edition = "2018"
+repository = "https://github.com/magiclen/paginator"
+homepage = "https://magiclen.org/paginator"
+keywords = ["paginate", "database", "webpage", "page", "pagination"]
+categories = ["no-std", "algorithms", "web-programming"]
+description = "This crate is used for generating pagination bar."
+readme = "README.md"
+license = "MIT"
+include = ["src/**/*", "Cargo.toml", "README.md", "LICENSE"]
+
+[badges.travis-ci]
+repository = "magiclen/paginator"
+branch = "master"
+
+[dependencies]
+
+[features]
+default = ["std"]
+std = []
