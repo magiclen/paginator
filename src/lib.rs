@@ -21,19 +21,19 @@ let mut html = String::new();
 for page_item in paginator.paginate() {
     match page_item {
         PageItem::Prev(page) => {
-            html.write_fmt(format_args!("<li><a href=\"/page/{page}\"><i class=\"fas fa-angle-left\"></i></a></li>", page = page));
+            html.write_fmt(format_args!("<li><a href=\"/page/{page}\"><i class=\"fas fa-angle-left\"></i></a></li>", page = page)).unwrap();
         }
         PageItem::Page(page) => {
-            html.write_fmt(format_args!("<li><a href=\"/page/{page}\">{page}</a></li>", page = page));
+            html.write_fmt(format_args!("<li><a href=\"/page/{page}\">{page}</a></li>", page = page)).unwrap();
         }
         PageItem::CurrentPage(page) => {
-            html.write_fmt(format_args!("<li>{page}</li>", page = page));
+            html.write_fmt(format_args!("<li>{page}</li>", page = page)).unwrap();
         }
         PageItem::Ignore => {
             html.push_str("<li>...</li>");
         }
         PageItem::Next(page) => {
-            html.write_fmt(format_args!("<li><a href=\"/page/{page}\"><i class=\"fas fa-angle-right\"></i></a></li>", page = page));
+            html.write_fmt(format_args!("<li><a href=\"/page/{page}\"><i class=\"fas fa-angle-right\"></i></a></li>", page = page)).unwrap();
         }
     }
 }
