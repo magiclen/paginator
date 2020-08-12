@@ -121,7 +121,7 @@ impl DoubleEndedIterator for PaginatorIter {
             self.back_page -= n;
 
             if self.current_page <= self.back_page {
-                return Some(unsafe { self.next_unchecked() });
+                return Some(unsafe { self.next_back_unchecked() });
             }
         }
 
