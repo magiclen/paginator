@@ -66,13 +66,11 @@ impl Iterator for PaginatorIter {
     }
 
     #[inline]
-    fn count(mut self) -> usize
+    fn count(self) -> usize
     where
         Self: Sized, {
         if self.current_page <= self.back_page {
             let remaining_pages = self.back_page + 1 - self.current_page;
-
-            self.current_page = self.back_page + 1;
 
             remaining_pages
         } else {
