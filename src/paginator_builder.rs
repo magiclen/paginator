@@ -182,6 +182,14 @@ impl PaginatorBuilder {
 
     #[inline]
     fn build_check_common(&self) -> Result<(), PaginatorBuildError> {
+        if self.current_page == 0 {
+            return Err(PaginatorBuildError::CurrentPageZero);
+        }
+
+        if self.total_pages == 0 {
+            return Err(PaginatorBuildError::TotalPagesZero);
+        }
+
         if self.current_page > self.total_pages {
             return Err(PaginatorBuildError::CurrentPageTooLarge {
                 current_page: self.current_page,
@@ -202,14 +210,6 @@ impl PaginatorBuilder {
 
     #[inline]
     pub fn build_paginator(self) -> Result<Paginator, PaginatorBuildError> {
-        if self.current_page == 0 {
-            return Err(PaginatorBuildError::CurrentPageZero);
-        }
-
-        if self.total_pages == 0 {
-            return Err(PaginatorBuildError::TotalPagesZero);
-        }
-
         self.build_check_common()?;
 
         Ok(Paginator {
@@ -229,7 +229,8 @@ impl PaginatorBuilder {
 
         Ok(PaginatorIter {
             total_pages: self.total_pages,
-            next_page: self.current_page,
+            current_page: self.current_page,
+            back_page: self.total_pages,
             max_item_count: self.max_item_count,
             start_size: self.start_size,
             end_size: self.end_size,

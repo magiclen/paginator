@@ -6,8 +6,8 @@ use paginator::PaginatorBuilder;
 fn basic() {
     assert!(PaginatorBuilder::new(1).build_paginator().is_ok());
     assert!(PaginatorBuilder::new(1).build_paginator_iter().is_ok());
-    assert!(PaginatorBuilder::new(0).current_page(0).build_paginator().is_err());
-    assert!(PaginatorBuilder::new(0).current_page(0).build_paginator_iter().is_ok());
+    assert!(PaginatorBuilder::new(0).current_page(1).build_paginator().is_err());
+    assert!(PaginatorBuilder::new(1).current_page(0).build_paginator_iter().is_err());
     assert!(PaginatorBuilder::new(1).current_page(2).build_paginator_iter().is_err());
 }
 

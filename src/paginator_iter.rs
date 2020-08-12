@@ -2,9 +2,9 @@ use crate::Paginator;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct PaginatorIter {
-    // next_page CANNOT be bigger than `total_pages + 1`
     pub(crate) total_pages: usize,
-    pub(crate) next_page: usize,
+    pub(crate) current_page: usize,
+    pub(crate) back_page: usize,
     pub(crate) max_item_count: usize,
     pub(crate) start_size: usize,
     pub(crate) end_size: usize,
@@ -14,10 +14,10 @@ pub struct PaginatorIter {
 
 impl PaginatorIter {
     #[inline]
-    fn to_page_config(&self) -> Paginator {
+    fn to_page_config(&self, current_page: usize) -> Paginator {
         Paginator {
             total_pages: self.total_pages,
-            current_page: self.next_page,
+            current_page,
             max_item_count: self.max_item_count,
             start_size: self.start_size,
             end_size: self.end_size,
@@ -30,9 +30,18 @@ impl PaginatorIter {
 impl PaginatorIter {
     #[inline]
     unsafe fn next_unchecked(&mut self) -> Paginator {
-        let page_config = self.to_page_config();
+        let page_config = self.to_page_config(self.current_page);
 
-        self.next_page += 1;
+        self.current_page += 1;
+
+        page_config
+    }
+
+    #[inline]
+    unsafe fn next_back_unchecked(&mut self) -> Paginator {
+        let page_config = self.to_page_config(self.back_page);
+
+        self.back_page -= 1;
 
         page_config
     }
@@ -43,7 +52,7 @@ impl Iterator for PaginatorIter {
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        if self.next_page <= self.total_pages {
+        if self.current_page <= self.back_page {
             Some(unsafe { self.next_unchecked() })
         } else {
             None
@@ -52,8 +61,7 @@ impl Iterator for PaginatorIter {
 
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
-        let remaining_pages = self.total_pages - self.next_page + 1;
-
+        let remaining_pages = self.back_page + 1 - self.current_page;
         (remaining_pages, Some(remaining_pages))
     }
 
@@ -61,36 +69,40 @@ impl Iterator for PaginatorIter {
     fn count(mut self) -> usize
     where
         Self: Sized, {
-        let remaining_pages = self.total_pages - self.next_page + 1;
+        if self.current_page <= self.back_page {
+            let remaining_pages = self.back_page + 1 - self.current_page;
 
-        self.next_page = self.total_pages + 1;
+            self.current_page = self.back_page + 1;
 
-        remaining_pages
+            remaining_pages
+        } else {
+            0
+        }
     }
 
     #[inline]
     fn last(mut self) -> Option<Self::Item>
     where
         Self: Sized, {
-        if self.total_pages == 0 {
-            None
-        } else {
-            self.next_page = self.total_pages;
+        if self.current_page <= self.back_page {
+            self.current_page = self.back_page;
 
             Some(unsafe { self.next_unchecked() })
+        } else {
+            None
         }
     }
 
     #[inline]
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
-        self.next_page += n;
+        self.current_page += n;
 
-        if self.next_page > self.total_pages {
-            self.next_page = self.total_pages;
+        if self.current_page <= self.back_page {
+            Some(unsafe { self.next_unchecked() })
+        } else {
+            self.current_page = self.back_page + 1;
 
             None
-        } else {
-            Some(unsafe { self.next_unchecked() })
         }
     }
 }
@@ -98,10 +110,8 @@ impl Iterator for PaginatorIter {
 impl DoubleEndedIterator for PaginatorIter {
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
-        if self.next_page > 1 && self.total_pages > 0 {
-            self.next_page -= 1;
-
-            Some(self.to_page_config())
+        if self.current_page <= self.back_page {
+            Some(unsafe { self.next_back_unchecked() })
         } else {
             None
         }
@@ -109,13 +119,19 @@ impl DoubleEndedIterator for PaginatorIter {
 
     #[inline]
     fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
-        if self.next_page > n && self.total_pages > 0 {
-            self.next_page -= n;
+        self.current_page += n;
 
-            Some(self.to_page_config())
-        } else {
-            None
+        if self.back_page > n {
+            self.back_page -= n;
+
+            if self.current_page <= self.back_page {
+                return Some(unsafe { self.next_unchecked() });
+            }
         }
+
+        self.back_page = self.current_page - 1;
+
+        None
     }
 }
 
@@ -126,7 +142,8 @@ impl Paginator {
     pub fn iter(&self) -> PaginatorIter {
         PaginatorIter {
             total_pages: self.total_pages,
-            next_page: self.current_page,
+            current_page: self.current_page,
+            back_page: self.total_pages,
             max_item_count: self.max_item_count,
             start_size: self.start_size,
             end_size: self.end_size,
