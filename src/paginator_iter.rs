@@ -119,8 +119,6 @@ impl DoubleEndedIterator for PaginatorIter {
 
     #[inline]
     fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
-        self.current_page += n;
-
         if self.back_page > n {
             self.back_page -= n;
 
