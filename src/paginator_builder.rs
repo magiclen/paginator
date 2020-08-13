@@ -3,7 +3,7 @@ use core::fmt::{self, Display, Formatter};
 #[cfg(feature = "std")]
 use std::error::Error;
 
-use crate::{Paginator, PaginatorIter};
+use crate::{Paginator, PaginatorIter, YesNoDepends};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum PaginatorBuildError {
@@ -63,25 +63,28 @@ pub struct PaginatorBuilder {
     /// The number of `PageItem`s (the `PageItem::Next` item is excluded) on the end edge (after the last `PageItem::Ignore` item).
     pub end_size: usize,
     /// Whether to add the `PageItem::Prev` item.
-    pub has_prev: bool,
+    pub has_prev: YesNoDepends,
     /// Whether to add the `PageItem::Next` item.
-    pub has_next: bool,
+    pub has_next: YesNoDepends,
 }
 
 impl PaginatorBuilder {
     /**
-        Create a new `PageConfigBuilder` with some default options.
+        Create a new `PaginatorBuilder` with some default options.
 
-        ```text
-        PageConfigBuilder {
-            total_pages: <total_pages>,
+        ```rust
+        # use paginator::{PaginatorBuilder, YesNoDepends};
+        # let total_pages = 10;
+        PaginatorBuilder {
+            total_pages, // this is input by the caller.
             current_page: 1,
             max_item_count: 9,
             start_size: 1,
             end_size: 1,
-            has_prev: true,
-            has_next: true,
+            has_prev: YesNoDepends::Depends,
+            has_next: YesNoDepends::Depends,
         }
+        # ;
         ```
     */
     #[inline]
@@ -92,8 +95,8 @@ impl PaginatorBuilder {
             max_item_count: 9,
             start_size: 1,
             end_size: 1,
-            has_prev: true,
-            has_next: true,
+            has_prev: YesNoDepends::Depends,
+            has_next: YesNoDepends::Depends,
         }
     }
 
@@ -139,7 +142,7 @@ impl PaginatorBuilder {
 
     /// Set whether to add the `PageItem::Prev` item.
     #[inline]
-    pub const fn has_prev(mut self, has_prev: bool) -> PaginatorBuilder {
+    pub const fn has_prev(mut self, has_prev: YesNoDepends) -> PaginatorBuilder {
         self.has_prev = has_prev;
 
         self
@@ -147,7 +150,7 @@ impl PaginatorBuilder {
 
     /// Set whether to add the `PageItem::Next` item.
     #[inline]
-    pub const fn has_next(mut self, has_next: bool) -> PaginatorBuilder {
+    pub const fn has_next(mut self, has_next: YesNoDepends) -> PaginatorBuilder {
         self.has_next = has_next;
 
         self
@@ -167,11 +170,11 @@ impl PaginatorBuilder {
 
                 let mut min_item_count = (size + 3).min(self.total_pages);
 
-                if self.has_prev {
+                if !self.has_prev.no() {
                     min_item_count += 1;
                 }
 
-                if self.has_next {
+                if !self.has_next.no() {
                     min_item_count += 1;
                 }
 

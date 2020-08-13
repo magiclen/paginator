@@ -1,6 +1,6 @@
 extern crate paginator;
 
-use paginator::PaginatorBuilder;
+use paginator::{PaginatorBuilder, YesNoDepends};
 
 #[test]
 fn basic() {
@@ -13,7 +13,11 @@ fn basic() {
 
 #[test]
 fn max_item_count_1() {
-    let builder = PaginatorBuilder::new(1).start_size(1).end_size(1).has_prev(true).has_next(true);
+    let builder = PaginatorBuilder::new(1)
+        .start_size(1)
+        .end_size(1)
+        .has_prev(YesNoDepends::Depends)
+        .has_next(YesNoDepends::Depends);
 
     assert!(builder.clone().total_pages(1).max_item_count(0).build_paginator().is_err());
     assert!(builder.clone().total_pages(1).max_item_count(1).build_paginator().is_ok());
@@ -34,8 +38,11 @@ fn max_item_count_1() {
 
 #[test]
 fn max_item_count_2() {
-    let builder =
-        PaginatorBuilder::new(1).start_size(0).end_size(0).has_prev(false).has_next(false);
+    let builder = PaginatorBuilder::new(1)
+        .start_size(0)
+        .end_size(0)
+        .has_prev(YesNoDepends::No)
+        .has_next(YesNoDepends::No);
 
     assert!(builder.clone().total_pages(1).max_item_count(0).build_paginator().is_err());
     assert!(builder.clone().total_pages(1).max_item_count(1).build_paginator().is_ok());
@@ -49,8 +56,11 @@ fn max_item_count_2() {
 
 #[test]
 fn max_item_count_3() {
-    let builder =
-        PaginatorBuilder::new(1).start_size(2).end_size(2).has_prev(false).has_next(false);
+    let builder = PaginatorBuilder::new(1)
+        .start_size(2)
+        .end_size(2)
+        .has_prev(YesNoDepends::No)
+        .has_next(YesNoDepends::No);
 
     assert!(builder.clone().total_pages(1).max_item_count(0).build_paginator().is_err());
     assert!(builder.clone().total_pages(1).max_item_count(1).build_paginator().is_ok());

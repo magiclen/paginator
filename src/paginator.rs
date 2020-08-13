@@ -2,7 +2,7 @@ use core::num::NonZeroUsize;
 
 use alloc::vec::Vec;
 
-use crate::PageItem;
+use crate::{PageItem, YesNoDepends};
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Paginator {
@@ -12,8 +12,8 @@ pub struct Paginator {
     pub(crate) max_item_count: usize,
     pub(crate) start_size: usize,
     pub(crate) end_size: usize,
-    pub(crate) has_prev: bool,
-    pub(crate) has_next: bool,
+    pub(crate) has_prev: YesNoDepends,
+    pub(crate) has_next: YesNoDepends,
 }
 
 impl Paginator {
@@ -43,12 +43,12 @@ impl Paginator {
     }
 
     #[inline]
-    pub const fn has_prev(&self) -> bool {
+    pub const fn has_prev(&self) -> YesNoDepends {
         self.has_prev
     }
 
     #[inline]
-    pub const fn has_next(&self) -> bool {
+    pub const fn has_next(&self) -> YesNoDepends {
         self.has_next
     }
 }
@@ -59,12 +59,21 @@ impl Paginator {
         let mut v = Vec::new();
         let mut items_counter = self.max_item_count;
 
-        let show_prev = self.has_prev && self.current_page > 1 && self.total_pages > 2;
-        let show_next =
-            self.has_next && self.current_page < self.total_pages && self.total_pages > 2;
+        let show_prev = self.has_prev.yes()
+            || (self.has_prev.depends() && self.current_page > 1 && self.total_pages > 2);
+        let show_next = self.has_prev.yes()
+            || (self.has_prev.depends()
+                && self.current_page < self.total_pages
+                && self.total_pages > 2);
 
         if show_prev {
-            v.push(PageItem::Prev(unsafe { NonZeroUsize::new_unchecked(self.current_page - 1) }));
+            let page = self.current_page - 1;
+
+            if page == 0 {
+                v.push(PageItem::ReservedPrev);
+            } else {
+                v.push(PageItem::Prev(unsafe { NonZeroUsize::new_unchecked(page) }));
+            }
 
             items_counter -= 1;
         }
@@ -188,7 +197,13 @@ impl Paginator {
         }
 
         if show_next {
-            v.push(PageItem::Next(unsafe { NonZeroUsize::new_unchecked(self.current_page + 1) }));
+            let page = self.current_page + 1;
+
+            if page > self.total_pages {
+                v.push(PageItem::ReservedNext);
+            } else {
+                v.push(PageItem::Next(unsafe { NonZeroUsize::new_unchecked(page) }));
+            }
         }
 
         v

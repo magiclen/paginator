@@ -21,7 +21,7 @@ let mut html = String::new();
 for page_item in paginator.paginate() {
     match page_item {
         PageItem::Prev(page) => {
-            html.write_fmt(format_args!("<li><a href=\"/page/{page}\"><i class=\"fas fa-angle-left\"></i></a></li>", page = page)).unwrap();
+            html.write_fmt(format_args!("<li><a href=\"/page/{page}\">&laquo;</a></li>", page = page)).unwrap();
         }
         PageItem::Page(page) => {
             html.write_fmt(format_args!("<li><a href=\"/page/{page}\">{page}</a></li>", page = page)).unwrap();
@@ -33,7 +33,10 @@ for page_item in paginator.paginate() {
             html.push_str("<li>...</li>");
         }
         PageItem::Next(page) => {
-            html.write_fmt(format_args!("<li><a href=\"/page/{page}\"><i class=\"fas fa-angle-right\"></i></a></li>", page = page)).unwrap();
+            html.write_fmt(format_args!("<li><a href=\"/page/{page}\">&raquo;</a></li>", page = page)).unwrap();
+        }
+        _ => {
+            // `PageItem::ReservedPrev` or `PageItem::ReservedNext` variants is used when the `has_prev` option or the `has_next` option is set to `YesNoDepends::Yes`.
         }
     }
 }
@@ -90,6 +93,7 @@ version = "*"
 default-features = false
 ```
 */
+
 #![cfg_attr(not(feature = "std"), no_std)]
 
 extern crate alloc;
@@ -98,6 +102,7 @@ mod page_item;
 mod paginator;
 mod paginator_builder;
 mod paginator_iter;
+mod yes_no_depends;
 
 use core::fmt::Write;
 
@@ -107,6 +112,7 @@ pub use self::paginator::*;
 pub use page_item::*;
 pub use paginator_builder::*;
 pub use paginator_iter::*;
+pub use yes_no_depends::*;
 
 /// Format `PageItem`s to a string. Usually for debug or logging.
 pub fn page_items_to_string(page_items: &[PageItem]) -> String {

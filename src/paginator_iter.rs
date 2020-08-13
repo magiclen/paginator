@@ -1,4 +1,4 @@
-use crate::Paginator;
+use crate::{Paginator, YesNoDepends};
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct PaginatorIter {
@@ -8,8 +8,8 @@ pub struct PaginatorIter {
     pub(crate) max_item_count: usize,
     pub(crate) start_size: usize,
     pub(crate) end_size: usize,
-    pub(crate) has_prev: bool,
-    pub(crate) has_next: bool,
+    pub(crate) has_prev: YesNoDepends,
+    pub(crate) has_next: YesNoDepends,
 }
 
 impl PaginatorIter {
