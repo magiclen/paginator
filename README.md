@@ -7,7 +7,7 @@ This crate is used for generating pagination bar on webpages or other UIs.
 
 ## Examples
 
-##### Creating a Pagination Bar Which Has 5 Pages and Is on Page 1
+#### Creating a Pagination Bar Which Has 5 Pages and Is on Page 1
 
 ```rust
 extern crate paginator;
@@ -23,7 +23,9 @@ let mut html = String::new();
 for page_item in paginator.paginate() {
     match page_item {
         PageItem::Prev(page) => {
-            html.write_fmt(format_args!("<li><a href=\"/page/{page}\"><i class=\"fas fa-angle-left\"></i></a></li>", page = page)).unwrap();
+            // `PageItem::Prev` variant is used when the `has_prev` option is not set to `YesNoDepends::No`.
+
+            html.write_fmt(format_args!("<li><a href=\"/page/{page}\">&laquo;</a></li>", page = page)).unwrap();
         }
         PageItem::Page(page) => {
             html.write_fmt(format_args!("<li><a href=\"/page/{page}\">{page}</a></li>", page = page)).unwrap();
@@ -35,13 +37,18 @@ for page_item in paginator.paginate() {
             html.push_str("<li>...</li>");
         }
         PageItem::Next(page) => {
-            html.write_fmt(format_args!("<li><a href=\"/page/{page}\"><i class=\"fas fa-angle-right\"></i></a></li>", page = page)).unwrap();
+            // `PageItem::Next` variant is used when the `has_next` option is not set to `YesNoDepends::No`.
+
+            html.write_fmt(format_args!("<li><a href=\"/page/{page}\">&raquo;</a></li>", page = page)).unwrap();
+        }
+        _ => {
+            // `PageItem::ReservedPrev` or `PageItem::ReservedNext` variant is used only when the `has_prev` option or the `has_next` option is set to `YesNoDepends::Yes`.
         }
     }
 }
 ```
 
-##### Creating Pagination Bars Which Has 2 Pages for Different Current Pages
+#### Creating Pagination Bars Which Has 2 Pages for Different Current Pages
 
 ```rust
 extern crate paginator;
