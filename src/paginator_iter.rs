@@ -70,9 +70,7 @@ impl Iterator for PaginatorIter {
     where
         Self: Sized, {
         if self.current_page <= self.back_page {
-            let remaining_pages = self.back_page + 1 - self.current_page;
-
-            remaining_pages
+            self.back_page + 1 - self.current_page
         } else {
             0
         }

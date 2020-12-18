@@ -83,11 +83,11 @@ impl Paginator {
         }
 
         let start_size = self.start_size.min(self.total_pages);
-        let end_size = self.start_size.min(self.total_pages);
+        let end_size = self.end_size.min(self.total_pages);
 
         let (ignore_start, ignore_end) = if self.total_pages > items_counter {
-            let ignore_start = self.current_page >= 3 + start_size;
-            let ignore_end = self.total_pages - self.current_page + 1 >= 3 + end_size;
+            let ignore_start = self.current_page >= 4 + start_size;
+            let ignore_end = self.total_pages - self.current_page + 1 >= 4 + end_size;
 
             (ignore_start, ignore_end)
         } else {

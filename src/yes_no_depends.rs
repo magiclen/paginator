@@ -8,25 +8,16 @@ pub enum YesNoDepends {
 impl YesNoDepends {
     #[inline]
     pub fn yes(self) -> bool {
-        match self {
-            YesNoDepends::Yes => true,
-            _ => false,
-        }
+        matches!(self, YesNoDepends::Yes)
     }
 
     #[inline]
     pub fn depends(self) -> bool {
-        match self {
-            YesNoDepends::Depends => true,
-            _ => false,
-        }
+        matches!(self, YesNoDepends::Depends)
     }
 
     #[inline]
     pub fn no(self) -> bool {
-        match self {
-            YesNoDepends::No => true,
-            _ => false,
-        }
+        matches!(self, YesNoDepends::No)
     }
 }
