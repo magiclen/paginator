@@ -95,8 +95,9 @@ impl Paginator {
         };
 
         if ignore_start {
+            items_counter -= start_size + 2; // start_size + 1 + 1
+
             if ignore_end {
-                items_counter -= start_size + 2; // start_size + 1 + 1
                 items_counter -= end_size + 1;
 
                 for i in 1..=start_size {
@@ -136,8 +137,6 @@ impl Paginator {
                     v.push(PageItem::Page(unsafe { NonZeroUsize::new_unchecked(i) }));
                 }
             } else {
-                items_counter -= start_size + 2; // start_size + 1 + 1
-
                 if self.current_page < self.total_pages {
                     items_counter -= self.total_pages - self.current_page;
                 }

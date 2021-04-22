@@ -1,6 +1,6 @@
 [package]
 name = "paginator"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2018"
 repository = "https://github.com/magiclen/paginator"
@@ -11,10 +11,6 @@ description = "This crate is used for generating pagination bar."
 readme = "README.md"
 license = "MIT"
 include = ["src/**/*", "Cargo.toml", "README.md", "LICENSE"]
-
-[badges.travis-ci]
-repository = "magiclen/paginator"
-branch = "master"
 
 [dependencies]
 
