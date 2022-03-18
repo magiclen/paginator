@@ -33,7 +33,7 @@ fn max_item_count_1() {
     assert!(builder.clone().total_pages(5).max_item_count(7).build_paginator().is_ok());
     assert!(builder.clone().total_pages(6).max_item_count(7).build_paginator().is_ok());
     assert!(builder.clone().total_pages(7).max_item_count(7).build_paginator().is_ok());
-    assert!(builder.clone().total_pages(7).max_item_count(6).build_paginator().is_err());
+    assert!(builder.total_pages(7).max_item_count(6).build_paginator().is_err());
 }
 
 #[test]
@@ -51,7 +51,7 @@ fn max_item_count_2() {
     assert!(builder.clone().total_pages(3).max_item_count(2).build_paginator().is_err());
     assert!(builder.clone().total_pages(3).max_item_count(3).build_paginator().is_ok());
     assert!(builder.clone().total_pages(4).max_item_count(3).build_paginator().is_ok());
-    assert!(builder.clone().total_pages(4).max_item_count(2).build_paginator().is_err());
+    assert!(builder.total_pages(4).max_item_count(2).build_paginator().is_err());
 }
 
 #[test]
@@ -77,5 +77,5 @@ fn max_item_count_3() {
     assert!(builder.clone().total_pages(7).max_item_count(6).build_paginator().is_err());
     assert!(builder.clone().total_pages(7).max_item_count(7).build_paginator().is_ok());
     assert!(builder.clone().total_pages(8).max_item_count(7).build_paginator().is_ok());
-    assert!(builder.clone().total_pages(8).max_item_count(6).build_paginator().is_err());
+    assert!(builder.total_pages(8).max_item_count(6).build_paginator().is_err());
 }

@@ -1,8 +1,8 @@
 [package]
 name = "paginator"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["Magic Len <len@magiclen.org>"]
-edition = "2018"
+edition = "2021"
 repository = "https://github.com/magiclen/paginator"
 homepage = "https://magiclen.org/paginator"
 keywords = ["paginate", "database", "webpage", "page", "pagination"]
