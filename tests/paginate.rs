@@ -1,5 +1,3 @@
-extern crate paginator;
-
 use paginator::{page_items_to_string, Paginator};
 
 #[test]

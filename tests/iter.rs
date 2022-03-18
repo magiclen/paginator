@@ -1,5 +1,3 @@
-extern crate paginator;
-
 use paginator::PaginatorBuilder;
 
 #[test]

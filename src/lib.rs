@@ -8,8 +8,6 @@ This crate is used for generating pagination bar on webpages or other UIs.
 #### Creating a Pagination Bar Which Has 5 Pages and Is on Page 1
 
 ```rust
-extern crate paginator;
-
 use paginator::{Paginator, PageItem};
 
 use core::fmt::Write;
@@ -49,8 +47,6 @@ for page_item in paginator.paginate() {
 #### Creating Pagination Bars Which Has 2 Pages for Different Current Pages
 
 ```rust
-extern crate paginator;
-
 use paginator::{Paginator, PageItem};
 
 let mut paginator_iter = Paginator::builder(2).build_paginator_iter().unwrap();
@@ -71,8 +67,6 @@ Before building up a `Paginator`, there is an important option, `max_item_count`
 Look at the following code for more details.
 
 ```rust
-extern crate paginator;
-
 use paginator::{Paginator, page_items_to_string};
 
 let mut p = Paginator::builder(8).max_item_count(9).start_size(1).end_size(1).build_paginator_iter().unwrap();
