@@ -188,3 +188,182 @@ fn nine_pages() {
         page_items_to_string(p.next().unwrap().paginate().as_slice())
     );
 }
+
+#[test]
+fn twenty_pages() {
+    let mut p = Paginator::builder(20)
+        .max_item_count(17)
+        .start_size(1)
+        .end_size(1)
+        .build_paginator_iter()
+        .unwrap();
+
+    assert_eq!(
+        "1* 2 3 4 5 6 7 8 9 10 11 12 13 14 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2* 3 4 5 6 7 8 9 10 11 12 13 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3* 4 5 6 7 8 9 10 11 12 13 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3 4* 5 6 7 8 9 10 11 12 13 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3 4 5* 6 7 8 9 10 11 12 13 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3 4 5 6* 7 8 9 10 11 12 13 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3 4 5 6 7* 8 9 10 11 12 13 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3 4 5 6 7 8* 9 10 11 12 13 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 4 5 6 7 8 9* 10 11 12 13 14 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 5 6 7 8 9 10* 11 12 13 14 15 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 6 7 8 9 10 11* 12 13 14 15 16 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 7 8 9 10 11 12* 13 14 15 16 17 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 8 9 10 11 12 13* 14 15 16 17 18 19 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 8 9 10 11 12 13 14* 15 16 17 18 19 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 8 9 10 11 12 13 14 15* 16 17 18 19 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 8 9 10 11 12 13 14 15 16* 17 18 19 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 8 9 10 11 12 13 14 15 16 17* 18 19 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 8 9 10 11 12 13 14 15 16 17 18* 19 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 8 9 10 11 12 13 14 15 16 17 18 19* 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 7 8 9 10 11 12 13 14 15 16 17 18 19 20*",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+
+    let mut p = Paginator::builder(20)
+        .max_item_count(19)
+        .start_size(1)
+        .end_size(1)
+        .build_paginator_iter()
+        .unwrap();
+
+    assert_eq!(
+        "1* 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2* 3 4 5 6 7 8 9 10 11 12 13 14 15 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3* 4 5 6 7 8 9 10 11 12 13 14 15 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3 4* 5 6 7 8 9 10 11 12 13 14 15 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3 4 5* 6 7 8 9 10 11 12 13 14 15 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3 4 5 6* 7 8 9 10 11 12 13 14 15 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3 4 5 6 7* 8 9 10 11 12 13 14 15 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3 4 5 6 7 8* 9 10 11 12 13 14 15 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3 4 5 6 7 8 9* 10 11 12 13 14 15 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 4 5 6 7 8 9 10* 11 12 13 14 15 16 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 5 6 7 8 9 10 11* 12 13 14 15 16 17 ... 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 6 7 8 9 10 11 12* 13 14 15 16 17 18 19 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 6 7 8 9 10 11 12 13* 14 15 16 17 18 19 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 6 7 8 9 10 11 12 13 14* 15 16 17 18 19 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 6 7 8 9 10 11 12 13 14 15* 16 17 18 19 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 6 7 8 9 10 11 12 13 14 15 16* 17 18 19 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 6 7 8 9 10 11 12 13 14 15 16 17* 18 19 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 6 7 8 9 10 11 12 13 14 15 16 17 18* 19 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 6 7 8 9 10 11 12 13 14 15 16 17 18 19* 20 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 ... 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20*",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+}

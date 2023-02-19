@@ -104,16 +104,37 @@ impl Paginator {
                     v.push(PageItem::Page(unsafe { NonZeroUsize::new_unchecked(i) }));
                 }
 
-                let padding = items_counter >> 1;
-                let padding_p = items_counter - padding;
+                let window_size = items_counter >> 1;
 
-                if start_size + 2 == self.current_page - padding {
-                    v.push(PageItem::Page(unsafe { NonZeroUsize::new_unchecked(start_size + 1) }));
+                let mut hp_s = self.current_page as isize - window_size as isize;
+                let hp_e = self.current_page - 1;
+                let tp_s = self.current_page + 1;
+                let mut tp_e = self.current_page + (items_counter - window_size);
+
+                let end_start = self.total_pages - self.end_size + 1;
+
+                if start_size as isize + 2 >= hp_s {
+                    // no ignore_start item
+
+                    let old_hp_s = hp_s;
+
+                    hp_s = start_size as isize + 1;
+
+                    // plus one because ignore_start is not needed
+                    tp_e += (hp_s + 1 - old_hp_s) as usize;
                 } else {
                     v.push(PageItem::Ignore);
+
+                    if tp_e + 2 > end_start {
+                        // tp_e is too high, shift the window left
+                        let old_tp_e = tp_e;
+
+                        tp_e = end_start - 2;
+                        hp_s -= (old_tp_e - tp_e) as isize;
+                    }
                 }
 
-                for i in (self.current_page - padding)..=(self.current_page - 1) {
+                for i in hp_s as usize..=hp_e {
                     v.push(PageItem::Page(unsafe { NonZeroUsize::new_unchecked(i) }));
                 }
 
@@ -121,19 +142,17 @@ impl Paginator {
                     NonZeroUsize::new_unchecked(self.current_page)
                 }));
 
-                for i in (self.current_page + 1)..=(self.current_page + padding_p) {
+                for i in tp_s..=tp_e {
                     v.push(PageItem::Page(unsafe { NonZeroUsize::new_unchecked(i) }));
                 }
 
-                if self.current_page + padding_p + 2 == self.total_pages - self.end_size + 1 {
-                    v.push(PageItem::Page(unsafe {
-                        NonZeroUsize::new_unchecked(self.current_page + padding_p + 1)
-                    }));
+                if tp_e + 2 == end_start {
+                    v.push(PageItem::Page(unsafe { NonZeroUsize::new_unchecked(tp_e + 1) }));
                 } else {
                     v.push(PageItem::Ignore);
                 }
 
-                for i in (self.total_pages - self.end_size + 1)..=self.total_pages {
+                for i in end_start..=self.total_pages {
                     v.push(PageItem::Page(unsafe { NonZeroUsize::new_unchecked(i) }));
                 }
             } else {
