@@ -61,8 +61,8 @@ impl Paginator {
 
         let show_prev = self.has_prev.yes()
             || (self.has_prev.depends() && self.current_page > 1 && self.total_pages > 2);
-        let show_next = self.has_prev.yes()
-            || (self.has_prev.depends()
+        let show_next = self.has_next.yes()
+            || (self.has_next.depends()
                 && self.current_page < self.total_pages
                 && self.total_pages > 2);
 
