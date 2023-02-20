@@ -190,6 +190,57 @@ fn nine_pages() {
 }
 
 #[test]
+fn ten_pages() {
+    let mut p = Paginator::builder(10)
+        .max_item_count(9)
+        .start_size(2)
+        .end_size(2)
+        .build_paginator_iter()
+        .unwrap();
+
+    assert_eq!(
+        "1* 2 3 4 5 ... 9 10 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2* 3 4 ... 9 10 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3* 4 ... 9 10 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 3 4* ... 9 10 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 ... 5* ... 9 10 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 ... 6* ... 9 10 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 ... 7* 8 9 10 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 ... 7 8* 9 10 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 ... 7 8 9* 10 >",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "< 1 2 ... 6 7 8 9 10*",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+}
+
+#[test]
 fn twenty_pages() {
     let mut p = Paginator::builder(20)
         .max_item_count(17)
