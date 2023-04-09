@@ -1,19 +1,18 @@
-use core::num::NonZeroUsize;
-
 use alloc::vec::Vec;
+use core::num::NonZeroUsize;
 
 use crate::{PageItem, YesNoDepends};
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Paginator {
     // total_pages and current_page is always bigger than 0 and current_page CANNOT be bigger than total_pages.
-    pub(crate) total_pages: usize,
-    pub(crate) current_page: usize,
+    pub(crate) total_pages:    usize,
+    pub(crate) current_page:   usize,
     pub(crate) max_item_count: usize,
-    pub(crate) start_size: usize,
-    pub(crate) end_size: usize,
-    pub(crate) has_prev: YesNoDepends,
-    pub(crate) has_next: YesNoDepends,
+    pub(crate) start_size:     usize,
+    pub(crate) end_size:       usize,
+    pub(crate) has_prev:       YesNoDepends,
+    pub(crate) has_next:       YesNoDepends,
 }
 
 impl Paginator {

@@ -1,5 +1,4 @@
 use core::fmt::{self, Display, Formatter};
-
 #[cfg(feature = "std")]
 use std::error::Error;
 
@@ -9,13 +8,8 @@ use crate::{Paginator, PaginatorIter, YesNoDepends};
 pub enum PaginatorBuildError {
     CurrentPageZero,
     TotalPagesZero,
-    CurrentPageTooLarge {
-        current_page: usize,
-        total_pages: usize,
-    },
-    MaxItemCountTooSmall {
-        min_item_count: usize,
-    },
+    CurrentPageTooLarge { current_page: usize, total_pages: usize },
+    MaxItemCountTooSmall { min_item_count: usize },
 }
 
 impl Display for PaginatorBuildError {
@@ -27,21 +21,17 @@ impl Display for PaginatorBuildError {
             PaginatorBuildError::CurrentPageTooLarge {
                 current_page,
                 total_pages,
-            } => {
-                f.write_fmt(format_args!(
-                    "{current_page} > {total_pages} (current_page > total_pages)",
-                    current_page = current_page,
-                    total_pages = total_pages
-                ))
-            }
+            } => f.write_fmt(format_args!(
+                "{current_page} > {total_pages} (current_page > total_pages)",
+                current_page = current_page,
+                total_pages = total_pages
+            )),
             PaginatorBuildError::MaxItemCountTooSmall {
                 min_item_count,
-            } => {
-                f.write_fmt(format_args!(
-                    "max_item_count cannot be smaller than {}",
-                    min_item_count
-                ))
-            }
+            } => f.write_fmt(format_args!(
+                "max_item_count cannot be smaller than {}",
+                min_item_count
+            )),
         }
     }
 }
@@ -53,19 +43,19 @@ impl Error for PaginatorBuildError {}
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct PaginatorBuilder {
     /// The number of pages.
-    pub total_pages: usize,
+    pub total_pages:    usize,
     /// The number of the current page.
-    pub current_page: usize,
+    pub current_page:   usize,
     /// The max number of `PageItem`s after generated.
     pub max_item_count: usize,
     /// The number of `PageItem`s (the `PageItem::Prev` item is excluded) on the start edge (before the first `PageItem::Ignore` item).
-    pub start_size: usize,
+    pub start_size:     usize,
     /// The number of `PageItem`s (the `PageItem::Next` item is excluded) on the end edge (after the last `PageItem::Ignore` item).
-    pub end_size: usize,
+    pub end_size:       usize,
     /// Whether to add the `PageItem::Prev` item.
-    pub has_prev: YesNoDepends,
+    pub has_prev:       YesNoDepends,
     /// Whether to add the `PageItem::Next` item.
-    pub has_next: YesNoDepends,
+    pub has_next:       YesNoDepends,
 }
 
 impl PaginatorBuilder {
@@ -179,7 +169,7 @@ impl PaginatorBuilder {
                 }
 
                 min_item_count
-            }
+            },
         }
     }
 
@@ -196,7 +186,7 @@ impl PaginatorBuilder {
         if self.current_page > self.total_pages {
             return Err(PaginatorBuildError::CurrentPageTooLarge {
                 current_page: self.current_page,
-                total_pages: self.total_pages,
+                total_pages:  self.total_pages,
             });
         }
 
@@ -216,13 +206,13 @@ impl PaginatorBuilder {
         self.build_check_common()?;
 
         Ok(Paginator {
-            total_pages: self.total_pages,
-            current_page: self.current_page,
+            total_pages:    self.total_pages,
+            current_page:   self.current_page,
             max_item_count: self.max_item_count,
-            start_size: self.start_size,
-            end_size: self.end_size,
-            has_prev: self.has_prev,
-            has_next: self.has_next,
+            start_size:     self.start_size,
+            end_size:       self.end_size,
+            has_prev:       self.has_prev,
+            has_next:       self.has_next,
         })
     }
 
@@ -231,14 +221,14 @@ impl PaginatorBuilder {
         self.build_check_common()?;
 
         Ok(PaginatorIter {
-            total_pages: self.total_pages,
-            current_page: self.current_page,
-            back_page: self.total_pages,
+            total_pages:    self.total_pages,
+            current_page:   self.current_page,
+            back_page:      self.total_pages,
             max_item_count: self.max_item_count,
-            start_size: self.start_size,
-            end_size: self.end_size,
-            has_prev: self.has_prev,
-            has_next: self.has_next,
+            start_size:     self.start_size,
+            end_size:       self.end_size,
+            has_prev:       self.has_prev,
+            has_next:       self.has_next,
         })
     }
 }

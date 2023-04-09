@@ -3,6 +3,7 @@ name = "paginator"
 version = "0.2.4"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2021"
+rust-version = "1.56"
 repository = "https://github.com/magiclen/paginator"
 homepage = "https://magiclen.org/paginator"
 keywords = ["paginate", "database", "webpage", "page", "pagination"]

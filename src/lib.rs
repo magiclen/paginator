@@ -102,15 +102,15 @@ mod paginator_builder;
 mod paginator_iter;
 mod yes_no_depends;
 
+use alloc::string::String;
 use core::fmt::Write;
 
-use alloc::string::String;
-
-pub use self::paginator::*;
 pub use page_item::*;
 pub use paginator_builder::*;
 pub use paginator_iter::*;
 pub use yes_no_depends::*;
+
+pub use self::paginator::*;
 
 /// Format `PageItem`s to a string. Usually for debug or logging.
 pub fn page_items_to_string(page_items: &[PageItem]) -> String {

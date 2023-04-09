@@ -1,5 +1,7 @@
-use core::fmt::{self, Display, Formatter};
-use core::num::NonZeroUsize;
+use core::{
+    fmt::{self, Display, Formatter},
+    num::NonZeroUsize,
+};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum PageItem {

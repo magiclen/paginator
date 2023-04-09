@@ -2,14 +2,14 @@ use crate::{Paginator, YesNoDepends};
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct PaginatorIter {
-    pub(crate) total_pages: usize,
-    pub(crate) current_page: usize,
-    pub(crate) back_page: usize,
+    pub(crate) total_pages:    usize,
+    pub(crate) current_page:   usize,
+    pub(crate) back_page:      usize,
     pub(crate) max_item_count: usize,
-    pub(crate) start_size: usize,
-    pub(crate) end_size: usize,
-    pub(crate) has_prev: YesNoDepends,
-    pub(crate) has_next: YesNoDepends,
+    pub(crate) start_size:     usize,
+    pub(crate) end_size:       usize,
+    pub(crate) has_prev:       YesNoDepends,
+    pub(crate) has_next:       YesNoDepends,
 }
 
 impl PaginatorIter {
@@ -135,14 +135,14 @@ impl Paginator {
     #[inline]
     pub fn iter(&self) -> PaginatorIter {
         PaginatorIter {
-            total_pages: self.total_pages,
-            current_page: self.current_page,
-            back_page: self.total_pages,
+            total_pages:    self.total_pages,
+            current_page:   self.current_page,
+            back_page:      self.total_pages,
             max_item_count: self.max_item_count,
-            start_size: self.start_size,
-            end_size: self.end_size,
-            has_prev: self.has_prev,
-            has_next: self.has_next,
+            start_size:     self.start_size,
+            end_size:       self.end_size,
+            has_prev:       self.has_prev,
+            has_next:       self.has_next,
         }
     }
 }
