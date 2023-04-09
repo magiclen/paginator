@@ -60,8 +60,8 @@ impl Paginator {
 
         let show_prev = self.has_prev.yes()
             || (self.has_prev.depends() && self.current_page > 1 && self.total_pages > 2);
-        let show_next = self.has_prev.yes()
-            || (self.has_prev.depends()
+        let show_next = self.has_next.yes()
+            || (self.has_next.depends()
                 && self.current_page < self.total_pages
                 && self.total_pages > 2);
 
@@ -85,8 +85,8 @@ impl Paginator {
         let end_size = self.end_size.min(self.total_pages);
 
         let (ignore_start, ignore_end) = if self.total_pages > items_counter {
-            let ignore_start = self.current_page >= 4 + start_size;
-            let ignore_end = self.total_pages - self.current_page + 1 >= 4 + end_size;
+            let ignore_start = self.current_page > 2 + start_size;
+            let ignore_end = self.total_pages - self.current_page > end_size;
 
             (ignore_start, ignore_end)
         } else {
