@@ -9,7 +9,6 @@ homepage = "https://magiclen.org/paginator"
 keywords = ["paginate", "database", "webpage", "page", "pagination"]
 categories = ["no-std", "algorithms", "web-programming"]
 description = "This crate is used for generating pagination bar."
-readme = "README.md"
 license = "MIT"
 include = ["src/**/*", "Cargo.toml", "README.md", "LICENSE"]
 
