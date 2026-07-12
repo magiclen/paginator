@@ -1,5 +1,8 @@
+use core::iter::FusedIterator;
+
 use crate::{Paginator, YesNoDepends};
 
+/// An iterator over paginator settings for consecutive current pages.
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct PaginatorIter {
     pub(crate) total_pages:    usize,
@@ -29,21 +32,18 @@ impl PaginatorIter {
 
 impl PaginatorIter {
     #[inline]
-    unsafe fn next_unchecked(&mut self) -> Paginator {
-        let page_config = self.to_page_config(self.current_page);
-
-        self.current_page += 1;
-
-        page_config
+    fn remaining_pages(&self) -> usize {
+        if self.current_page <= self.back_page {
+            self.back_page - self.current_page + 1
+        } else {
+            0
+        }
     }
 
     #[inline]
-    unsafe fn next_back_unchecked(&mut self) -> Paginator {
-        let page_config = self.to_page_config(self.back_page);
-
-        self.back_page -= 1;
-
-        page_config
+    fn exhaust(&mut self) {
+        // Put the back cursor before the front cursor to mark the iterator as exhausted.
+        self.back_page = self.current_page - 1;
     }
 }
 
@@ -53,7 +53,15 @@ impl Iterator for PaginatorIter {
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         if self.current_page <= self.back_page {
-            Some(unsafe { self.next_unchecked() })
+            let page_config = self.to_page_config(self.current_page);
+
+            if self.current_page == self.back_page {
+                self.exhaust();
+            } else {
+                self.current_page += 1;
+            }
+
+            Some(page_config)
         } else {
             None
         }
@@ -61,7 +69,7 @@ impl Iterator for PaginatorIter {
 
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
-        let remaining_pages = self.back_page + 1 - self.current_page;
+        let remaining_pages = self.remaining_pages();
         (remaining_pages, Some(remaining_pages))
     }
 
@@ -69,21 +77,15 @@ impl Iterator for PaginatorIter {
     fn count(self) -> usize
     where
         Self: Sized, {
-        if self.current_page <= self.back_page {
-            self.back_page + 1 - self.current_page
-        } else {
-            0
-        }
+        self.remaining_pages()
     }
 
     #[inline]
-    fn last(mut self) -> Option<Self::Item>
+    fn last(self) -> Option<Self::Item>
     where
         Self: Sized, {
         if self.current_page <= self.back_page {
-            self.current_page = self.back_page;
-
-            Some(unsafe { self.next_unchecked() })
+            Some(self.to_page_config(self.back_page))
         } else {
             None
         }
@@ -91,23 +93,34 @@ impl Iterator for PaginatorIter {
 
     #[inline]
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
-        self.current_page += n;
-
-        if self.current_page <= self.back_page {
-            Some(unsafe { self.next_unchecked() })
+        if n < self.remaining_pages() {
+            self.current_page += n;
+            self.next()
         } else {
-            self.current_page = self.back_page + 1;
-
+            self.exhaust();
             None
         }
     }
 }
 
+impl ExactSizeIterator for PaginatorIter {
+    #[inline]
+    fn len(&self) -> usize {
+        self.remaining_pages()
+    }
+}
+
+impl FusedIterator for PaginatorIter {}
+
 impl DoubleEndedIterator for PaginatorIter {
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.current_page <= self.back_page {
-            Some(unsafe { self.next_back_unchecked() })
+            let page_config = self.to_page_config(self.back_page);
+
+            self.back_page -= 1;
+
+            Some(page_config)
         } else {
             None
         }
@@ -115,23 +128,20 @@ impl DoubleEndedIterator for PaginatorIter {
 
     #[inline]
     fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
-        if self.back_page > n {
+        if n < self.remaining_pages() {
             self.back_page -= n;
-
-            if self.current_page <= self.back_page {
-                return Some(unsafe { self.next_back_unchecked() });
-            }
+            self.next_back()
+        } else {
+            self.exhaust();
+            None
         }
-
-        self.back_page = self.current_page - 1;
-
-        None
     }
 }
 
 // TODO ----------
 
 impl Paginator {
+    /// Iterate from the current page through the last page.
     #[inline]
     pub fn iter(&self) -> PaginatorIter {
         PaginatorIter {

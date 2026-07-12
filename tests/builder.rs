@@ -1,4 +1,4 @@
-use paginator::{PaginatorBuilder, YesNoDepends};
+use paginator::{PaginatorBuildError, PaginatorBuilder, YesNoDepends};
 
 #[test]
 fn basic() {
@@ -7,6 +7,30 @@ fn basic() {
     assert!(PaginatorBuilder::new(0).current_page(1).build_paginator().is_err());
     assert!(PaginatorBuilder::new(1).current_page(0).build_paginator_iter().is_err());
     assert!(PaginatorBuilder::new(1).current_page(2).build_paginator_iter().is_err());
+}
+
+#[test]
+fn forced_controls_on_small_page_counts() {
+    let one_page = PaginatorBuilder::new(1).has_prev(YesNoDepends::Yes).has_next(YesNoDepends::Yes);
+
+    assert_eq!(
+        Err(PaginatorBuildError::MaxItemCountTooSmall {
+            min_item_count: 3
+        }),
+        one_page.clone().max_item_count(2).build_paginator()
+    );
+    assert!(one_page.max_item_count(3).build_paginator().is_ok());
+
+    let two_pages =
+        PaginatorBuilder::new(2).has_prev(YesNoDepends::Yes).has_next(YesNoDepends::Yes);
+
+    assert_eq!(
+        Err(PaginatorBuildError::MaxItemCountTooSmall {
+            min_item_count: 4
+        }),
+        two_pages.clone().max_item_count(3).build_paginator()
+    );
+    assert!(two_pages.max_item_count(4).build_paginator_iter().is_ok());
 }
 
 #[test]

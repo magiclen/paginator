@@ -3,14 +3,22 @@ use core::{
     num::NonZeroUsize,
 };
 
+/// An item displayed in a pagination bar.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum PageItem {
+    /// A link to a regular page.
     Page(NonZeroUsize),
+    /// The current page without a regular link.
     CurrentPage(NonZeroUsize),
+    /// A marker for a hidden range of pages.
     Ignore,
+    /// A link to the previous page.
     Prev(NonZeroUsize),
+    /// A link to the next page.
     Next(NonZeroUsize),
+    /// A reserved previous-page position without a valid target.
     ReservedPrev,
+    /// A reserved next-page position without a valid target.
     ReservedNext,
 }
 

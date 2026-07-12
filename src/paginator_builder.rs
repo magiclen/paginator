@@ -4,11 +4,16 @@ use std::error::Error;
 
 use crate::{Paginator, PaginatorIter, YesNoDepends};
 
+/// An error returned when paginator settings are invalid.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum PaginatorBuildError {
+    /// The current page is zero.
     CurrentPageZero,
+    /// The total number of pages is zero.
     TotalPagesZero,
+    /// The current page is greater than the total number of pages.
     CurrentPageTooLarge { current_page: usize, total_pages: usize },
+    /// The maximum item count is too small for the requested layout.
     MaxItemCountTooSmall { min_item_count: usize },
 }
 
@@ -151,11 +156,11 @@ impl PaginatorBuilder {
     fn compute_min_item_count(&self) -> usize {
         match self.total_pages {
             0 => 0,
-            1 => 1,
-            2 => 2,
+            1 | 2 => self.total_pages + self.has_prev.yes() as usize + self.has_next.yes() as usize,
             _ => {
                 let start_size = self.start_size.min(self.total_pages);
                 let end_size = self.end_size.min(self.total_pages);
+                // Oversized layout settings intentionally follow Rust's normal overflow behavior.
                 let size = start_size + end_size;
 
                 let mut min_item_count = (size + 3).min(self.total_pages);
@@ -201,6 +206,7 @@ impl PaginatorBuilder {
         Ok(())
     }
 
+    /// Build a paginator with the configured current page.
     #[inline]
     pub fn build_paginator(self) -> Result<Paginator, PaginatorBuildError> {
         self.build_check_common()?;
@@ -216,6 +222,7 @@ impl PaginatorBuilder {
         })
     }
 
+    /// Build an iterator that yields paginator settings for each remaining page.
     #[inline]
     pub fn build_paginator_iter(self) -> Result<PaginatorIter, PaginatorBuildError> {
         self.build_check_common()?;

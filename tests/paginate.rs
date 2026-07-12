@@ -1,4 +1,4 @@
-use paginator::{page_items_to_string, Paginator};
+use paginator::{page_items_to_string, PageItem, Paginator, YesNoDepends};
 
 #[test]
 fn one_page() {
@@ -23,6 +23,67 @@ fn two_pages() {
 
     assert_eq!("1* 2", page_items_to_string(p.next().unwrap().paginate().as_slice()));
     assert_eq!("1 2*", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+}
+
+#[test]
+fn forced_controls_on_small_page_counts() {
+    let one_page = Paginator::builder(1)
+        .max_item_count(3)
+        .has_prev(YesNoDepends::Yes)
+        .has_next(YesNoDepends::Yes)
+        .build_paginator()
+        .unwrap();
+
+    assert_eq!(") 1* (", page_items_to_string(&one_page.paginate()));
+
+    let mut two_pages = Paginator::builder(2)
+        .max_item_count(4)
+        .has_prev(YesNoDepends::Yes)
+        .has_next(YesNoDepends::Yes)
+        .build_paginator_iter()
+        .unwrap();
+
+    assert_eq!(") 1* 2 >", page_items_to_string(&two_pages.next().unwrap().paginate()));
+    assert_eq!("< 1 2* (", page_items_to_string(&two_pages.next().unwrap().paginate()));
+}
+
+#[test]
+fn large_page_numbers_do_not_overflow() {
+    let last_page = Paginator::builder(usize::MAX)
+        .current_page(usize::MAX)
+        .has_next(YesNoDepends::Yes)
+        .build_paginator()
+        .unwrap()
+        .paginate();
+
+    assert_eq!(9, last_page.len());
+    assert!(matches!(last_page.last(), Some(PageItem::ReservedNext)));
+    assert!(last_page
+        .iter()
+        .any(|item| matches!(item, PageItem::CurrentPage(page) if page.get() == usize::MAX)));
+
+    let middle_page = Paginator::builder(usize::MAX)
+        .current_page(isize::MAX as usize + 1)
+        .build_paginator()
+        .unwrap()
+        .paginate();
+
+    assert_eq!(9, middle_page.len());
+    assert!(middle_page.iter().any(
+        |item| matches!(item, PageItem::CurrentPage(page) if page.get() == isize::MAX as usize + 1)
+    ));
+
+    let near_last_page = Paginator::builder(usize::MAX)
+        .current_page(usize::MAX - 1)
+        .end_size(0)
+        .build_paginator()
+        .unwrap()
+        .paginate();
+
+    assert_eq!(9, near_last_page.len());
+    assert!(near_last_page
+        .iter()
+        .any(|item| matches!(item, PageItem::CurrentPage(page) if page.get() == usize::MAX - 1)));
 }
 
 #[test]
