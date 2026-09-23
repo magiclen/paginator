@@ -3,7 +3,7 @@ Paginator
 
 [![CI](https://github.com/magiclen/paginator/actions/workflows/ci.yml/badge.svg)](https://github.com/magiclen/paginator/actions/workflows/ci.yml)
 
-This crate is used for generating pagination bar on webpages or other UIs.
+This crate is used for generating pagination bars on webpages or other UIs.
 
 ## Examples
 
@@ -46,7 +46,7 @@ for page_item in paginator.paginate() {
 }
 ```
 
-#### Creating Pagination Bars Which Has 2 Pages for Different Current Pages
+#### Creating Pagination Bars Which Have 2 Pages for Different Current Pages
 
 ```rust
 use paginator::{Paginator, PageItem};
@@ -64,7 +64,7 @@ for page_item in paginator_iter.next().unwrap().paginate() {
 
 ## Pagination Rules
 
-Before building up a `Paginator`, there is an important option, `max_item_count`, can be set via `PaginatorBuilder`. This option can limit the count of items on the pagination bar. This crate **ignores** page items far away from the current page item to stick to the count limit of items. The first/last n items can be additionally reserved.
+Before building up a `Paginator`, there is an important option, `max_item_count`, which can be set via `PaginatorBuilder`. This option can limit the count of items on the pagination bar. This crate **ignores** page items far away from the current page item to stick to the count limit of items. The first/last n items can be additionally reserved.
 
 Look at the following code for more details.
 

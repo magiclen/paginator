@@ -143,7 +143,7 @@ impl DoubleEndedIterator for PaginatorIter {
 impl Paginator {
     /// Iterate from the current page through the last page.
     #[inline]
-    pub fn iter(&self) -> PaginatorIter {
+    pub const fn iter(&self) -> PaginatorIter {
         PaginatorIter {
             total_pages:    self.total_pages,
             current_page:   self.current_page,

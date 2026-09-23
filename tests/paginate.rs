@@ -34,7 +34,7 @@ fn forced_controls_on_small_page_counts() {
         .build_paginator()
         .unwrap();
 
-    assert_eq!(") 1* (", page_items_to_string(&one_page.paginate()));
+    assert_eq!("( 1* )", page_items_to_string(&one_page.paginate()));
 
     let mut two_pages = Paginator::builder(2)
         .max_item_count(4)
@@ -43,8 +43,67 @@ fn forced_controls_on_small_page_counts() {
         .build_paginator_iter()
         .unwrap();
 
-    assert_eq!(") 1* 2 >", page_items_to_string(&two_pages.next().unwrap().paginate()));
-    assert_eq!("< 1 2* (", page_items_to_string(&two_pages.next().unwrap().paginate()));
+    assert_eq!("( 1* 2 >", page_items_to_string(&two_pages.next().unwrap().paginate()));
+    assert_eq!("< 1 2* )", page_items_to_string(&two_pages.next().unwrap().paginate()));
+}
+
+#[test]
+fn forced_and_disabled_controls() {
+    let mut p = Paginator::builder(5)
+        .has_prev(YesNoDepends::Yes)
+        .has_next(YesNoDepends::Yes)
+        .build_paginator_iter()
+        .unwrap();
+
+    assert_eq!("( 1* 2 3 4 5 >", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("< 1 2* 3 4 5 >", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("< 1 2 3* 4 5 >", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("< 1 2 3 4* 5 >", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("< 1 2 3 4 5* )", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+
+    let mut p = Paginator::builder(12)
+        .max_item_count(7)
+        .has_prev(YesNoDepends::No)
+        .has_next(YesNoDepends::No)
+        .build_paginator_iter()
+        .unwrap();
+
+    assert_eq!("1* 2 3 4 5 ... 12", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("1 2* 3 4 5 ... 12", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("1 2 3* 4 5 ... 12", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("1 2 3 4* 5 ... 12", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!(
+        "1 ... 4 5* 6 ... 12",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "1 ... 5 6* 7 ... 12",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "1 ... 6 7* 8 ... 12",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "1 ... 7 8* 9 ... 12",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "1 ... 8 9* 10 11 12",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "1 ... 8 9 10* 11 12",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "1 ... 8 9 10 11* 12",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
+    assert_eq!(
+        "1 ... 8 9 10 11 12*",
+        page_items_to_string(p.next().unwrap().paginate().as_slice())
+    );
 }
 
 #[test]
@@ -478,4 +537,24 @@ fn twenty_pages() {
         "< 1 ... 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20*",
         page_items_to_string(p.next().unwrap().paginate().as_slice())
     );
+}
+
+#[test]
+fn zero_edge_sizes() {
+    let mut p = Paginator::builder(9)
+        .max_item_count(7)
+        .start_size(0)
+        .end_size(0)
+        .build_paginator_iter()
+        .unwrap();
+
+    assert_eq!("1* 2 3 4 5 ... >", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("< 1 2* 3 4 ... >", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("< 1 2 3* 4 ... >", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("< ... 3 4* 5 ... >", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("< ... 4 5* 6 ... >", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("< ... 5 6* 7 ... >", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("< ... 6 7* 8 9 >", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("< ... 6 7 8* 9 >", page_items_to_string(p.next().unwrap().paginate().as_slice()));
+    assert_eq!("< ... 5 6 7 8 9*", page_items_to_string(p.next().unwrap().paginate().as_slice()));
 }

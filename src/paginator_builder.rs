@@ -12,9 +12,17 @@ pub enum PaginatorBuildError {
     /// The total number of pages is zero.
     TotalPagesZero,
     /// The current page is greater than the total number of pages.
-    CurrentPageTooLarge { current_page: usize, total_pages: usize },
+    CurrentPageTooLarge {
+        /// The current page number.
+        current_page: usize,
+        /// The total number of pages.
+        total_pages:  usize,
+    },
     /// The maximum item count is too small for the requested layout.
-    MaxItemCountTooSmall { min_item_count: usize },
+    MaxItemCountTooSmall {
+        /// The smallest valid `max_item_count`, or `usize::MAX` if no value is large enough.
+        min_item_count: usize,
+    },
 }
 
 impl Display for PaginatorBuildError {
@@ -52,6 +60,7 @@ pub struct PaginatorBuilder {
     /// The number of the current page.
     pub current_page:   usize,
     /// The max number of `PageItem`s after generated.
+    /// Building fails with `PaginatorBuildError::MaxItemCountTooSmall` if this is smaller than `min(start_size + end_size + 3, total_pages)` plus one for each of `has_prev` and `has_next` that is not `YesNoDepends::No` (only `YesNoDepends::Yes` counts when `total_pages` is 1 or 2).
     pub max_item_count: usize,
     /// The number of `PageItem`s (the `PageItem::Prev` item is excluded) on the start edge (before the first `PageItem::Ignore` item).
     pub start_size:     usize,
@@ -112,6 +121,7 @@ impl PaginatorBuilder {
     }
 
     /// Set the max number of `PageItem`s after generated.
+    /// Building fails with `PaginatorBuildError::MaxItemCountTooSmall` if this is smaller than `min(start_size + end_size + 3, total_pages)` plus one for each of `has_prev` and `has_next` that is not `YesNoDepends::No` (only `YesNoDepends::Yes` counts when `total_pages` is 1 or 2).
     #[inline]
     pub const fn max_item_count(mut self, max_item_count: usize) -> PaginatorBuilder {
         self.max_item_count = max_item_count;
@@ -153,27 +163,30 @@ impl PaginatorBuilder {
 }
 
 impl PaginatorBuilder {
-    fn compute_min_item_count(&self) -> usize {
+    /// Return `None` when the minimum item count is larger than `usize::MAX`.
+    fn compute_min_item_count(&self) -> Option<usize> {
         match self.total_pages {
-            0 => 0,
-            1 | 2 => self.total_pages + self.has_prev.yes() as usize + self.has_next.yes() as usize,
+            0 => Some(0),
+            1 | 2 => {
+                Some(self.total_pages + self.has_prev.yes() as usize + self.has_next.yes() as usize)
+            },
             _ => {
                 let start_size = self.start_size.min(self.total_pages);
                 let end_size = self.end_size.min(self.total_pages);
-                // Oversized layout settings intentionally follow Rust's normal overflow behavior.
-                let size = start_size + end_size;
+                // Saturating does not change the result because it is capped by `total_pages`.
+                let size = start_size.saturating_add(end_size);
 
-                let mut min_item_count = (size + 3).min(self.total_pages);
+                let mut min_item_count = size.saturating_add(3).min(self.total_pages);
 
                 if !self.has_prev.no() {
-                    min_item_count += 1;
+                    min_item_count = min_item_count.checked_add(1)?;
                 }
 
                 if !self.has_next.no() {
-                    min_item_count += 1;
+                    min_item_count = min_item_count.checked_add(1)?;
                 }
 
-                min_item_count
+                Some(min_item_count)
             },
         }
     }
@@ -195,15 +208,13 @@ impl PaginatorBuilder {
             });
         }
 
-        let min_item_count = self.compute_min_item_count();
-
-        if self.max_item_count < min_item_count {
-            return Err(PaginatorBuildError::MaxItemCountTooSmall {
-                min_item_count,
-            });
+        match self.compute_min_item_count() {
+            Some(min_item_count) if self.max_item_count >= min_item_count => Ok(()),
+            min_item_count => Err(PaginatorBuildError::MaxItemCountTooSmall {
+                // `None` means that no `max_item_count` value is large enough.
+                min_item_count: min_item_count.unwrap_or(usize::MAX),
+            }),
         }
-
-        Ok(())
     }
 
     /// Build a paginator with the configured current page.
@@ -245,7 +256,7 @@ impl PaginatorBuilder {
 impl Paginator {
     /// An alias of `PaginatorBuilder::new`.
     #[inline]
-    pub fn builder(total_pages: usize) -> PaginatorBuilder {
+    pub const fn builder(total_pages: usize) -> PaginatorBuilder {
         PaginatorBuilder::new(total_pages)
     }
 }
@@ -253,7 +264,7 @@ impl Paginator {
 impl PaginatorIter {
     /// An alias of `PaginatorBuilder::new`.
     #[inline]
-    pub fn builder(total_pages: usize) -> PaginatorBuilder {
+    pub const fn builder(total_pages: usize) -> PaginatorBuilder {
         PaginatorBuilder::new(total_pages)
     }
 }

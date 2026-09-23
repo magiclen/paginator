@@ -8,7 +8,7 @@ macro_rules! non_zero_page {
         let page = $page;
         debug_assert!(page > 0);
 
-        // SAFETY: Every caller passes a page number that is greater than zero.
+        // SAFETY: Every caller passes a page number greater than zero, which relies on the `max_item_count` validation in `PaginatorBuilder`.
         unsafe { NonZeroUsize::new_unchecked(page) }
     }};
 }
@@ -16,7 +16,7 @@ macro_rules! non_zero_page {
 /// Pagination settings for one current page.
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Paginator {
-    // total_pages and current_page is always bigger than 0 and current_page CANNOT be bigger than total_pages.
+    // total_pages and current_page are always bigger than 0 and current_page CANNOT be bigger than total_pages.
     pub(crate) total_pages:    usize,
     pub(crate) current_page:   usize,
     pub(crate) max_item_count: usize,
@@ -71,7 +71,7 @@ impl Paginator {
 }
 
 impl Paginator {
-    /// Create `PageItem`s.
+    /// Create `PageItem`s for the pagination bar, with at most `max_item_count` items.
     pub fn paginate(&self) -> Vec<PageItem> {
         // Reserve space for page items and up to two control items without overflowing usize.
         let page_capacity = self.max_item_count.min(self.total_pages);

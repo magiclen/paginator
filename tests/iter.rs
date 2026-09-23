@@ -1,6 +1,6 @@
 use core::iter::FusedIterator;
 
-use paginator::PaginatorBuilder;
+use paginator::{Paginator, PaginatorBuilder};
 
 fn assert_iterator_traits<T: ExactSizeIterator + FusedIterator>() {}
 
@@ -43,6 +43,23 @@ fn exact_size_and_fused() {
     assert_eq!(0, iter.len());
     assert_eq!(None, iter.next());
     assert_eq!(None, iter.next_back());
+}
+
+#[test]
+fn nth_and_nth_back() {
+    let mut iter = PaginatorBuilder::new(6).build_paginator_iter().unwrap();
+
+    assert_eq!(2, iter.nth(1).unwrap().current_page());
+    assert_eq!(5, iter.nth_back(1).unwrap().current_page());
+    assert_eq!(vec![3, 4], iter.map(|p| p.current_page()).collect::<Vec<_>>());
+}
+
+#[test]
+fn iter_from_current_page() {
+    let paginator = Paginator::builder(5).current_page(3).build_paginator().unwrap();
+
+    assert_eq!(vec![3, 4, 5], paginator.iter().map(|p| p.current_page()).collect::<Vec<_>>());
+    assert_eq!(vec![3, 4, 5], paginator.into_iter().map(|p| p.current_page()).collect::<Vec<_>>());
 }
 
 #[test]

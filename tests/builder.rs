@@ -101,3 +101,16 @@ fn max_item_count_3() {
     assert!(builder.clone().total_pages(8).max_item_count(7).build_paginator().is_ok());
     assert!(builder.total_pages(8).max_item_count(6).build_paginator().is_err());
 }
+
+#[test]
+fn oversized_layout_settings_do_not_overflow() {
+    assert_eq!(
+        Err(PaginatorBuildError::MaxItemCountTooSmall {
+            min_item_count: usize::MAX
+        }),
+        PaginatorBuilder::new(usize::MAX)
+            .start_size(usize::MAX)
+            .end_size(usize::MAX)
+            .build_paginator()
+    );
+}

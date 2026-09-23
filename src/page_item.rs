@@ -31,8 +31,8 @@ impl Display for PageItem {
             PageItem::Ignore => f.write_str("..."),
             PageItem::Next(_) => f.write_str(">"),
             PageItem::Prev(_) => f.write_str("<"),
-            PageItem::ReservedPrev => f.write_str(")"),
-            PageItem::ReservedNext => f.write_str("("),
+            PageItem::ReservedPrev => f.write_str("("),
+            PageItem::ReservedNext => f.write_str(")"),
         }
     }
 }

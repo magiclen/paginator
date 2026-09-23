@@ -1,6 +1,6 @@
 [package]
 name = "paginator"
-version = "0.2.7"
+version = "0.2.8"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2021"
 rust-version = "1.56"
@@ -8,7 +8,7 @@ repository = "https://github.com/magiclen/paginator"
 homepage = "https://magiclen.org/paginator"
 keywords = ["paginate", "database", "webpage", "page", "pagination"]
 categories = ["no-std", "algorithms", "web-programming"]
-description = "This crate is used for generating pagination bar."
+description = "This crate is used for generating pagination bars."
 license = "MIT"
 include = ["src/**/*", "Cargo.toml", "README.md", "LICENSE"]
 
